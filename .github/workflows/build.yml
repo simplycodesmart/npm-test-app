@@ -13,7 +13,7 @@ on:
 
 # Permissions required
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 jobs:
@@ -50,8 +50,8 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - name: Build Angular library
-        run: yarn build # Adjust script if needed
+      - name: Build Angular project
+        run: yarn build # Ensure this runs the Angular build script that generates the dist folder
 
       - name: Semantic release
         run: yarn semantic-release
@@ -60,7 +60,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package to npm
-        run: yarn publish --non-interactive --access public
+        run: |
+          cd dist
+          yarn publish --non-interactive --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -74,12 +76,3 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-
-      - name: Build Angular project
-        run: yarn build # Ensure this runs the Angular build script that generates the dist folder
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # Path to your built files
