@@ -60,7 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package to npm
-        run: yarn publish  --access public
+        run: yarn publish --non-interactive --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -74,3 +74,12 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+
+      - name: Build Angular project
+        run: yarn build # Ensure this runs the Angular build script that generates the dist folder
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # Path to your built files
