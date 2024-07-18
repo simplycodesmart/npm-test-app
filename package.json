@@ -1,6 +1,6 @@
 {
   "name": "npm-test-app",
-  "version": "0.0.0-development",
+  "version": "0.0.1",
   "source": "src/index.html",
   "scripts": {
     "start": "parcel",
