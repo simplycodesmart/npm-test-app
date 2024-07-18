@@ -16,6 +16,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
@@ -24,12 +25,10 @@ jobs:
       pull-requests: write
       repository-projects: write
     if: ${{ github.ref == 'refs/heads/master' }}
-    # needs:
-    #   - deploy-storybook # Assuming 'quality' job is defined elsewhere
 
     strategy:
       matrix:
-        node-version: ["20.13.1"] # Add other Node.js versions if needed
+        node-version: ["20.13.1"]
 
     steps:
       - name: Checkout repository
@@ -46,14 +45,15 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Build Angular project
+        run: yarn build # Ensure this runs the Angular build script that generates the dist folder
+
       - name: Configure npm authentication
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - name: Build Angular project
-        run: yarn build # Ensure this runs the Angular build script that generates the dist folder
-
       - name: Semantic release
+        id: semantic-release
         run: yarn semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -62,17 +62,17 @@ jobs:
       - name: Publish package to npm
         run: |
           cd dist
-          yarn publish --non-interactive --access public
+          yarn publish --access public --non-interactive
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.semantic-release.outputs.nextRelease.version }}
+          release_name: Release ${{ steps.semantic-release.outputs.nextRelease.version }}
           draft: false
           prerelease: false
           generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
