@@ -21,6 +21,10 @@ permissions:
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     if: ${{ github.ref == 'refs/heads/master' }}
     # needs:
     #   - deploy-storybook # Assuming 'quality' job is defined elsewhere
