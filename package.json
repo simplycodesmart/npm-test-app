@@ -1,9 +1,11 @@
 {
   "name": "npm-test-app",
   "version": "0.0.0-development",
-  "main": "index.js",
+  "source": "src/index.html",
   "scripts": {
+    "start": "parcel",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "parcel build",
     "semantic-release": "semantic-release",
     "commit": "git-cz"
   },
@@ -12,7 +14,14 @@
   "description": "",
   "packageManager": "yarn@1.22.22",
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^10.1.0",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.1",
     "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "parcel": "^2.12.0",
     "semantic-release": "^24.0.0"
   },
@@ -22,5 +31,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/simplycodesmart/npm-test-app.git"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
